@@ -6,6 +6,7 @@
 #include "miniassembler.h"
 #include <assert.h>
 #include <stddef.h>
+#include <stdio.h>
 
 /*--------------------------------------------------------------------*/
 /* Modify *puiDest in place,
@@ -19,16 +20,38 @@ static void setField(unsigned int uiSrc, unsigned int uiSrcStartBit,
                      unsigned int *puiDest, unsigned int uiDestStartBit,
                      unsigned int uiNumBits)
 {
-   /* Your code here */
+   unsigned int valSrc;
+   
+   /* left shifting and right shifting to get only uiNumBits starting 
+      from the right at uiSrcStartBit*/
+   valSrc = (((uiSrc>>uiSrcStartBit)<<(32-uiNumBits))>>(32-uiNumBits-uiSrcStartBit));
 
+   /* leftshift or right shift the number of bits required to get the 
+      appropriate vits to start at position uiDestStartBit. */
+   if(uiDestStartBit>uiSrcStartBit)
+      valSrc = valSrc<<(uiDestStartBit-uiSrcStartBit);
+   else
+      valSrc = valSrc>>(uiDestStartBit-uiSrcStartBit);
+   
+   /* maintain the 1's in puiDest while setting only the 1's in valSrc 
+      equal to the respective position in puiDest. */
+   *puiDest = *puiDest | valSrc;
 }
 
 /*--------------------------------------------------------------------*/
 
 unsigned int MiniAssembler_mov(unsigned int uiReg, int iImmed)
 {
-   /* Your code here */
+   unsigned int uiInstr;
+   /* base instruction code */
+   uiInstr = 0x52800000;
 
+   /* destination register */
+   setField(uiReg, 0, &uiInstr, 0,5);
+
+   /* value to be placed in register */
+   setField(iImmed, 0, &uiInstr, 5,16);
+   return uiInstr;
 }
 
 /*--------------------------------------------------------------------*/
@@ -59,8 +82,10 @@ unsigned int MiniAssembler_adr(unsigned int uiReg, unsigned long ulAddr,
 unsigned int MiniAssembler_strb(unsigned int uiFromReg,
    unsigned int uiToReg)
 {
-   /* Your code here */
-
+   unsigned int ret = 0x39000000;
+   setField(uiToReg, 0, &ret, 5,5);
+   setField(uiFromReg, 0, &ret, 0,5);   
+   return ret;
 }
 
 /*--------------------------------------------------------------------*/
@@ -68,6 +93,16 @@ unsigned int MiniAssembler_strb(unsigned int uiFromReg,
 unsigned int MiniAssembler_b(unsigned long ulAddr,
    unsigned long ulAddrOfThisInstr)
 {
-   /* Your code here */
+   unsigned int uiInstr;
+   unsigned int uiDisp;
+   /* Base Instruction Code */
+   uiInstr = 0x14000000;
 
+   /* address offset between ulAddr and ulAddrOfThisInstr */
+   uiDisp = (unsigned int)(ulAddr-ulAddrOfThisInstr)/4;
+
+   /* setting the appropriate fields with the address offset */
+   setField(uiDisp, 0, &uiInstr, 0, 26);
+   return uiInstr; 
 }
+
