@@ -9,7 +9,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/* the expected length of the input */
 enum {INPUT_LENGTH = 13};
+
+/* the size of the buffer in grader.c */
 enum {BUFFER_LENGTH = 48};
 /*
     this main function reads the first INPUT_LENGTH characters 
