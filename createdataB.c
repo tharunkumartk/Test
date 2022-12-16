@@ -23,7 +23,7 @@ enum {BUFFER_LENGTH = 48};
 int main(void) {
     FILE* psFile;
     char input[INPUT_LENGTH];
-    int remainingChars;
+    size_t remainingChars;
     unsigned long ret;
     /* address of the "grade = 'B'" line in grader.c "*/
     ret = 4196440lu;
@@ -32,7 +32,7 @@ int main(void) {
     psFile = fopen("dataB", "w");
     /* the remaining number of characters required to fill the
         48 character limit */
-    remainingChars = BUFFER_LENGTH-(unsigned long)strlen(input);
+    remainingChars = BUFFER_LENGTH-strlen(input);
     fprintf(psFile,"%s",input);
     while(remainingChars>0) {
         fprintf(psFile,"%c", '\0');
