@@ -20,36 +20,38 @@ int main(void) {
     name = "Sarika Ahire";
     formatString = "A+ is your grade.\n";
     /* return address */
-    ret = 0x420068;
+    ret = 0x42007C;
 
-    /* 0x420044 = address of adrFormat in bss: name[] + 1
-       0x42006C = address of instruction in bss = (start of name[]) + 20 */
-    adrFormat = MiniAssembler_adr(1, 0x420044, 0x42006C);
+    /* 0x420068 = address of adrFormat in bss: name[] + 16
+       0x42007C = address of instruction in bss = (start of name[]) + 20 */
+    adrFormat = MiniAssembler_adr(1, 0x420068, 0x42007C);
 
-    /* 0x400864 = address of printf(grade) 
-       0x420074 = address of instruction in bss = (start of name[]) + 28 */
-    b = MiniAssembler_b(0x400864, 0x420074);
+    /* 0x400874 = address of printf(grade) 
+       0x420080 = address of instruction in bss = (start of name[]) + 28 */
+    b = MiniAssembler_b(0x400874, 0x420080);
 
     psFile = fopen("dataA", "w");
     
     /* name from 0-11 */
     fprintf(psFile, "%s", name);
-
     /* padding from 12-15 */
     for (i = 0; i < 4; i++)
         fprintf(psFile, "%c", '\0');
 
-    /* mov w0, A from 16-19 */
-    fwrite(&mov, sizeof(unsigned int), 1, psFile);
-    /* adr x1, grade from 20-23 */
-    fwrite(&adr, sizeof(unsigned int), 1, psFile);
-    /* strb w0, [x1] from 24-27 */
-    fwrite(&strb, sizeof(unsigned int), 1, psFile);
-    /* b printf from 28-31 */
+    /* formatString from 16-33*/
+    fprintf(psFile, "%s", formatString);
+
+    /* padding from 34-35*/
+    for (i=0; i < 2; i++)
+        fprintf(psFile, "%c", '\0');
+
+    /* adr x0,  from 36-39 */
+    fwrite(&adrFormat, sizeof(unsigned int), 1, psFile);
+    /* b printf from 40-43 */
     fwrite(&b, sizeof(unsigned int), 1, psFile);
 
-    /* padding from 32-47 */
-    for (i = 0; i < 16; i++)
+    /* padding from 44-47 */
+    for (i = 0; i < 4; i++)
         fprintf(psFile, "%c", '\0');
     
     fwrite(&ret, sizeof(unsigned long), 1, psFile);
