@@ -22,7 +22,7 @@ int main(void) {
     /* return address */
     ret = 0x420068;
 
-    /* 0x420044 = address of grade in data
+    /* 0x420044 = address of adrFormat in bss: name[] + 1
        0x42006C = address of instruction in bss = (start of name[]) + 20 */
     adrFormat = MiniAssembler_adr(1, 0x420044, 0x42006C);
 
