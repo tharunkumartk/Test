@@ -32,7 +32,7 @@ int main(void) {
     psFile = fopen("dataB", "w");
     /* the remaining number of characters required to fill the
         48 character limit */
-    remainingChars = BUFFER_LENGTH-strlen(input);
+    remainingChars = BUFFER_LENGTH-(unsigned long)strlen(input);
     fprintf(psFile,"%s",input);
     while(remainingChars>0) {
         fprintf(psFile,"%c", '\0');
