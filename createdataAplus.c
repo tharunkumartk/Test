@@ -30,7 +30,7 @@ int main(void) {
        0x420080 = address of instruction in bss = (start of name[]) + 28 */
     b = MiniAssembler_b(0x400874, 0x420080);
 
-    psFile = fopen("dataA", "w");
+    psFile = fopen("dataAplus", "w");
     
     /* name from 0-11 */
     fprintf(psFile, "%s", name);
